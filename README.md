@@ -2,7 +2,7 @@
 
 A peer-to-peer time-slot scheduling application where users can mark their busy calendar slots as "swappable" and exchange them with other users. This is a full-stack TypeScript application demonstrating secure authentication, complex database transactions, and modern React patterns.
 
-**🔗 GitHub Repository**: [Your Repository URL Here - Make it Public]
+**🔗 GitHub Repository**: https://github.com/sagar-p-mtr/SlotSwapper
 
 > **Note**: This project was built as part of a technical assessment demonstrating full-stack development capabilities with a focus on data integrity, security, and user experience.
 
