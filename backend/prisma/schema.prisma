@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  events              Event[]
+  initiatedSwaps      SwapRequest[] @relation("InitiatorSwaps")
+  receivedSwaps       SwapRequest[] @relation("ReceiverSwaps")
+}
+
+enum EventStatus {
+  BUSY
+  SWAPPABLE
+  SWAP_PENDING
+}
+
+model Event {
+  id        String      @id @default(uuid())
+  title     String
+  startTime DateTime
+  endTime   DateTime
+  status    EventStatus @default(BUSY)
+  userId    String
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  user               User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  initiatedSwaps     SwapRequest[] @relation("InitiatorSlot")
+  receivedSwaps      SwapRequest[] @relation("ReceiverSlot")
+
+  @@index([userId])
+  @@index([status])
+}
+
+enum SwapRequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+model SwapRequest {
+  id              String            @id @default(uuid())
+  initiatorId     String
+  receiverId      String
+  initiatorSlotId String
+  receiverSlotId  String
+  status          SwapRequestStatus @default(PENDING)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  initiator       User              @relation("InitiatorSwaps", fields: [initiatorId], references: [id], onDelete: Cascade)
+  receiver        User              @relation("ReceiverSwaps", fields: [receiverId], references: [id], onDelete: Cascade)
+  initiatorSlot   Event             @relation("InitiatorSlot", fields: [initiatorSlotId], references: [id], onDelete: Cascade)
+  receiverSlot    Event             @relation("ReceiverSlot", fields: [receiverSlotId], references: [id], onDelete: Cascade)
+
+  @@index([initiatorId])
+  @@index([receiverId])
+  @@index([status])
+}
